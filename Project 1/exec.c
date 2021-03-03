@@ -27,17 +27,17 @@ int main(int argc, char const *argv[]) {
 
    char null[4] = "NULL";
    char *args[argc];
-   int command_len = strlen(argv[1]);
-   char command[command_len];
-   strcpy(command,argv[1]);
+   char command[10];
 
-
-   for(int i = 0; i < argc - 1; i++){
-      args[i] = (char *) malloc(strlen(argv[i+1]) + 1);
-      strcpy(args[i], argv[i+1]);
+   printf("%d\n", argc);
+   if(argc > 1){
+      strcpy(command,argv[1]);
+      for(int i = 0; i < argc - 1; i++){
+         args[i] = (char *) malloc(strlen(argv[i+1]) + 1);
+         strcpy(args[i], argv[i+1]);
+      }
+      args[argc - 1] = NULL;
    }
-
-   args[argc - 1] = NULL;
 
    int pid;
    pid = fork();
@@ -46,12 +46,15 @@ int main(int argc, char const *argv[]) {
       exit(2);
    }
    if(pid == 0){
-      //execvp(command,argv + 1);
+      printf("Child pid: %d\n", getpid());
+      printf("Parent pid: %d\n", getppid());
+      //execvp(command,argv + 1); //Gave me a weird warning
       execvp(command,args);
+
    }
    if(pid > 0){
       wait(NULL);
-      printf("Child terminated.\n");
+      //printf("Child terminated.\n");
    }
 
    return 0;
