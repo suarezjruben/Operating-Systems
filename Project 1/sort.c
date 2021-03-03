@@ -6,6 +6,12 @@
  * Instructor: Dr. Xiao Chen
  */
 
+ /*
+ The second program "sort.c" reads in a list of state abbreviations from stdin and
+display them in an alphabetical order on the screen. Assume there are no more than 10 states
+and the sequence is read until an EOF is encountered.
+*/
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -42,7 +48,8 @@ int main() {
         }
     }
 
-    printf("\nOrdered list: \n");
+    //printf("\nOrdered list: \n");
+    printf("\n");
     for(int i = 0; i < count; i++){
         puts(states[i]);
     }
