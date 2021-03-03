@@ -29,7 +29,6 @@ int main(int argc, char const *argv[]) {
    char *args[argc];
    char command[10];
 
-   printf("%d\n", argc);
    if(argc > 1){
       strcpy(command,argv[1]);
       for(int i = 0; i < argc - 1; i++){
