@@ -19,7 +19,7 @@ perform a "./sort" process. Think about which exec() function to use.
 #include <stdlib.h>
 
 int main() {
-   pid_t pid;
+   int pid;
    int fd[2];
    char *args[]={"./pre","./sort", NULL};
 
@@ -34,14 +34,14 @@ int main() {
                dup(fd[0]);
                close(fd[0]);
                close(fd[1]);
-               execvp(args[1], args);
+               execv(args[1], args);
                break;
       default:
                close(1);
                dup(fd[1]);
                close(fd[0]);
                close(fd[1]);
-               execvp(args[0], args);
+               execv(args[0], args);
                break;
    }
    return 0;
