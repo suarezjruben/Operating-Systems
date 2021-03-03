@@ -39,7 +39,7 @@ int main(int argc, char const *argv[]) {
 
    args[argc - 1] = NULL;
 
-   pid_t pid;
+   int pid;
    pid = fork();
    if (pid < 0){
       printf("Fork failed. Error occured" );
