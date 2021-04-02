@@ -77,7 +77,7 @@ main(){
             }
             else arg_index++;
         }
-        /*for(int i = 0; i < arg_index; i++){ // will display start[]
+        /*for(int i = 0; i < 20; i++){ // will display start[]
             printf("%d\n", start[i]);
         }*/
         for( int i = 0; i <= pipes; i++){
