@@ -49,7 +49,7 @@ int main() {
     }
 
     //printf("\nOrdered list: \n");
-    printf("\n");
+    //printf("\n");
     for(int i = 0; i < count; i++){
         puts(states[i]);
     }

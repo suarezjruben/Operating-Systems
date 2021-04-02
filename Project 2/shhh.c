@@ -49,6 +49,7 @@ main(){
         if ( strcmp(argv[0],"exit") == 0 ) exit(0);
 
         /* Your change starts from here */
+
         char *in_file, *out_file;
         int arg_index, start_index, pipes, in_flag, out_flag, pid;
         arg_index = start_index = pipes = in_flag = out_flag = 0;
@@ -60,7 +61,6 @@ main(){
                 argv[arg_index] = 0;
                 in_file = argv[arg_index + 1];
                 in_flag++;
-                start[++start_index] = arg_index + 1;
                 arg_index++;
             }
             if( strcmp(argv[arg_index], "|") == 0 ){
@@ -73,12 +73,11 @@ main(){
                 argv[arg_index] = 0;
                 out_file = argv[arg_index + 1];
                 out_flag++;
-                start[++start_index] = arg_index + 1;
                 arg_index++;
             }
             else arg_index++;
         }
-        /*for(int i = 0; i < arg_index; i++){
+        /*for(int i = 0; i < arg_index; i++){ // will display start[]
             printf("%d\n", start[i]);
         }*/
         for( int i = 0; i <= pipes; i++){
