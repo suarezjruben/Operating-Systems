@@ -1,5 +1,11 @@
-total 188
-drwxr-xr-x 3 rsuarez rsuarez  4096 Apr  2 09:20 .
+CA
+CO
+DC
+NA
+NM
+NY
+TX
+3 rsuarez rsuarez  4096 Apr  2 09:20 .
 drwxr-xr-x 5 rsuarez rsuarez  4096 Apr  1 18:22 ..
 drwxrwxr-x 2 rsuarez rsuarez  4096 Apr  2 09:20 example
 -rw-rw-r-- 1 rsuarez rsuarez    53 Apr  1 18:48 input.txt
