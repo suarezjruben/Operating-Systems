@@ -1,3 +1,11 @@
+//Project 4
+/*
+ * Name:       Proj4.c
+ * Author:     Ruben Surez
+ * Class:      Operating Systems (CS 4328)
+ * Instructor: Dr. Xiao Chen
+ */
+ 
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -107,7 +115,6 @@ int OPTIMAL(){
             else if( j == FRAMES -1){
                 for(int l = 0; l < FRAMES; l++){
                     if(frame_array[l] == 0){
-                        //printf("Found empty\n");
                         frame_array[l] = REF_STR[i];
                         empty_found = 1;
                         break;;
