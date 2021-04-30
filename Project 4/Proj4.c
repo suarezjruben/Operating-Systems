@@ -1,190 +1,155 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
+#include <ctype.h>
+#include <unistd.h>
 
 #define SIZE 20
 
-void showFrames(int frames[], int size){
-   int i;
-   
-   for(i = 0; i < size; i++)
-      printf("%d\t", frames[i]);
-}
-
-void incrementCounter(int frames[], int counter[], int size){
-   int i;
-   
-   for(i = 0; i < size; i++)
-      if(frames[i] != 0)
-         counter[i]++;
-}
-
-int LRU(int str[], int size){
-   int pageFaults = 0, oldest = 0;
-   int frames[size], counter[size], flag[2];
-   int i, j;
-     
-   for(i = 0; i < size; i++){
-      frames[i] = 0;
-      counter[i] = 0;
-   }
-   
-   for(i = 0; i < SIZE; i++){
-      flag[0] = 0;
-      flag[1] = 0;
-        
-      for(j = 0; j < size; j++){
-         if(str[i] == frames[j]){
-            counter[j] = 0;
-            incrementCounter(frames, counter, size);
-            flag[0] = 1;
-            flag[1] = 1;
-            break;
-         }
-         else if(flag[0] == 0 && frames[j] == 0){
-            frames[j] = str[i];
-            incrementCounter(frames, counter, size);
-            pageFaults++;
-            flag[1] = 1;
-            break;
-         }
-      }
-        
-      if(flag[1] == 0){
-         oldest = 0;
-         for(j = 0; j < size; j++)
-            if(counter[j] > oldest)
-               oldest = counter[j];
-         
-         for(j = 0; j < size; j++)
-            if(oldest == counter[j])
-               break;
-         
-         frames[j] = str[i];
-         pageFaults++;
-         counter[j] = 0;
-         incrementCounter(frames, counter, size);
-      }
-        
-      printf("\n");
-      showFrames(frames, size);
-   }
-   printf("LRU PAGE FAULTS: %d\n", pageFaults);
-   return pageFaults;
-}
-
-int optimal(int str[], int size){
-   int pageFaults = 0, farthest = 0;
-   int frames[size], future[size], flag[3];
-   int i, j, k;
-   
-   for(i = 0; i < size; i++){
-      frames[i] = 0;
-      future[i] = 0;
-   }
-   
-   for(i = 0; i < SIZE; i++){
-      flag[0] = 0;
-      flag[1] = 0;
-        
-      for(j = 0; j < size; j++){
-         if(str[i] == frames[j]){
-            flag[0] = 1;
-            flag[1] = 1;
-            break;
-         }
-         else if(flag[0] == 0 && frames[j] == 0){
-            frames[j] = str[i];
-            pageFaults++;
-            flag[1] = 1;
-            break;
-         }
-      }
-        
-      if(flag[1] == 0){
-         flag[2] = 0;
-           
-         for(j = 0; j < size; j++){
-            future[j] = 0;
-              
-            for(k = i + 1; k < SIZE; k++){
-               if(str[k] == frames[j]){
-                  future[j] = k;
-                  break;
-               }
-            }
-            if(future[j] == 0){
-               flag[2] = 1;
-               break;
-            }
-         }
-           
-         if(flag[2] == 0){
-            farthest = 0;
-            for(j = 0; j < size; j++)
-               if(future[j] > farthest)
-                  farthest = future[j];
-            
-            for(j = 0; j < size; j++)
-               if(farthest == future[j])
-                  break;
-         }
-           
-         frames[j] = str[i];
-         pageFaults++;
-      }
-      
-      printf("\n");
-      showFrames(frames, size);
-   }
-   printf("OPTIMAL PAGE FAULTS: %d\n", pageFaults);
-   return pageFaults;
-}
-
-int randomNum(int lower, int upper){
-   int num = 0;
-   num = (rand() % (upper - lower + 1)) + lower;
-   return num;
-}
+static int REF_STR[SIZE];
+static int FRAMES = 0;
+static int OPT_FAULTS = 0;
+static int LRU_FAULTS = 0;
+static int LRU();
+static int OPTIMAL();
+static int CALC_FARST(int[], int);
 
 int main(){
-   int frames = 0, i, difference = 0;
-   int referenceString[SIZE];
+    int c;
+    do{
+        c = 0;
+        FRAMES = 0;
 
-   srand(time(0));
+        printf("\nEnter number of frames between 1 and 5 (Ctrl + D to exit): ");
 
-   printf("Enter number of frames:\t");
-   scanf("%d", &frames);
+        c = scanf("%d", &FRAMES);
 
-   while(frames < 1){
-      printf("Re-enter frame number:\t");
-      scanf("%d", &frames);
-   }
+        if(FRAMES >= 1 && FRAMES <= 5) {
+            printf("\nReference string: {");
+            for (int i = 0; i < SIZE; i++) {      // Generating random numbers for reference string
+                REF_STR[i] = rand() % 5 + 1;
+                printf(" %d", REF_STR[i]);
+            }
+            printf(" }\n\n");
+            printf("LRU Page Replacement Algorithm\n");
+            LRU();
+            printf("Total Faults: %d\n", LRU_FAULTS);
 
-   for(i = 0; i < SIZE; i++)
-      referenceString[i] = randomNum(1, 5);
-   
-   printf("\nReference string: ");
-   for(i = 0; i < SIZE; i++)
-      printf("%d ", referenceString[i]);
-   
-   printf("\n");
-   
-   int lru = LRU(referenceString, frames);
-   int opt = optimal(referenceString, frames);
-   
-   if(lru > opt){
-      difference = lru - opt;
-      printf("\nLRU had %d more page faults than Optimal.\n", difference);
-   }
-   else if (lru < opt){
-      difference =  opt - lru;
-      printf("\nOptimal had %d more page faults than LRU.\n", difference);
-   }
-   else
-      printf("\nBoth LRU and Optimal had the same number of page faults.\n");
-   
-   printf("\n");
-   
-   return 0;
+            printf("\nOptimal Page Replacement Algorithm\n");
+            OPTIMAL();
+            printf("Total Faults: %d\n", OPT_FAULTS);
+
+            if(OPT_FAULTS < LRU_FAULTS){
+                printf("\nOptimal page replacement algorithm took %d steps less than LRU. \n", LRU_FAULTS - OPT_FAULTS);
+            }else if(OPT_FAULTS == LRU_FAULTS){
+                printf("\nOptimal page replacement algorithm took the same number of steps as LRU. \n");
+            }else printf("\nOptimal page replacement algorithm took %d steps more than LRU. \n", OPT_FAULTS - LRU_FAULTS);
+
+        }else if (c == 0) while((getchar())!='\n');
+    }while(c != EOF);
+
+}
+int LRU(){
+    LRU_FAULTS = 0;
+    int lru = 0;
+    int frame_array[FRAMES];
+    int age_counter[FRAMES];
+    for(int i = 0; i < FRAMES; i++){
+        frame_array[i] = 0;
+        age_counter[i] = 0;
+    }
+    for(int i = 0; i < SIZE; i++){
+        int fault = 1;
+        for(int i = 0; i < FRAMES; i++){
+            age_counter[i]++;
+        }
+        for(int j = 0; j < FRAMES; j++){
+            if(REF_STR[i] == frame_array[j]){
+                age_counter[j]=0;
+                fault = 0;
+                break;
+            }
+            else if( j == FRAMES -1){
+                for(int i = 0; i < FRAMES; i++){
+                    if(age_counter[lru] < age_counter[i]) lru = i;
+                }
+                frame_array[lru] = REF_STR[i];
+                age_counter[lru]=0;
+            }
+        }
+        if(fault == 1) LRU_FAULTS++;
+        for(int i = 0; i < FRAMES; i++){
+            printf("%d\t", frame_array[i]);
+        }
+        printf("\n");
+    }
+
+}
+
+int OPTIMAL(){
+    OPT_FAULTS = 0;
+    int farthest;
+    int frame_array[FRAMES];
+    int near_future[FRAMES];
+    for(int i = 0; i < FRAMES; i++){
+        frame_array[i] = 0;
+        near_future[i] = 0;
+    }
+    for(int i = 0; i < SIZE; i++){
+        int fault = 1;
+        int empty_found = 0;
+
+        for(int j = 0; j < FRAMES; j++){
+
+            if(REF_STR[i] == frame_array[j]){
+                fault = 0;
+                break;
+            }
+            else if( j == FRAMES -1){
+                for(int l = 0; l < FRAMES; l++){
+                    if(frame_array[l] == 0){
+                        //printf("Found empty\n");
+                        frame_array[l] = REF_STR[i];
+                        empty_found = 1;
+                        break;;
+                    }
+                }
+                if(!empty_found){
+                    farthest = CALC_FARST(frame_array, i);
+                    frame_array[farthest] = REF_STR[i];
+                }
+
+            }
+        }
+        if(fault == 1) OPT_FAULTS++;
+        for(int i = 0; i < FRAMES; i++){
+            printf("%d\t", frame_array[i]);
+        }
+        printf("\n");
+    }
+}
+
+int CALC_FARST(int frame_array[], int i){
+    int counter = 0;
+    int farthest = 0;
+    int k = i + 1;
+    int near_future[FRAMES];
+    for(int i = 0; i < FRAMES; i++){
+        near_future[i] = 0;
+    }
+    while(counter < FRAMES - 1 && k < SIZE ){
+        for(int l = 0; l < FRAMES; l++){
+            if(frame_array[l] == REF_STR[k]){
+                if(near_future[l] == 0){
+                    near_future[l]++;
+                    counter++;
+                    break;
+                }
+            }
+        }
+        k++;
+    }
+    for(int i = 0; i < FRAMES; i++){
+        if(near_future[i]==0) farthest = i;
+    }
+    return farthest;
 }
